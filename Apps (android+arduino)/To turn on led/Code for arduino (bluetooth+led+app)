@@ -1,0 +1,27 @@
+#include <SoftwareSerial.h>
+SoftwareSerial Bluetooth(10, 9); // RX,
+String Data;
+int LED = 13; // the on-board LED
+
+ 
+void setup() {
+  Bluetooth.begin(9600);
+  Serial.begin(9600);
+  pinMode(LED,OUTPUT);
+ 
+}
+ 
+void loop() {
+  while (Bluetooth.available()){ //wait for data received
+    Data=Bluetooth.readString();
+    Serial.println(Data);
+    if(Data=="ON"){  
+      digitalWrite(LED,HIGH);
+    }
+    else if(Data=="OFF"){
+       digitalWrite(LED,LOW);
+    }
+    else{;}
+  }
+delay(100);
+}
