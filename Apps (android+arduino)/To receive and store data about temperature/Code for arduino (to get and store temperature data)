@@ -1,0 +1,36 @@
+#include <SoftwareSerial.h>
+SoftwareSerial Bluetooth(10, 9); 
+String Data;
+ const int temperature = 0;
+  
+void setup() {
+  Bluetooth.begin(9600);
+  Serial.begin(9600);
+   Bluetooth.println("Ready for command...");
+}
+
+
+void loop() {
+  float Volt, degC, degF;
+   
+  while (Bluetooth.available()){ 
+    Data=Bluetooth.readString();
+ 
+    Serial.println(Data);
+    if(Data=="Ready"){  
+      Volt = getVolt(temperature);
+  degC = (Volt - 0.5) * 100.0;
+  degF = degC * (9.0/5.0) + 32.0;
+       Bluetooth.print("  deg C: ");
+  Bluetooth.println(degC);
+  Bluetooth.print("  deg F: ");
+  Bluetooth.println(degF);
+    }
+    else{;}
+  }
+delay(2000);
+}
+
+ float getVolt(int pin)
+{  return (analogRead(pin) * 0.004882814);
+}
