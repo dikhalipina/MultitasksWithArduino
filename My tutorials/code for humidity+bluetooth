@@ -1,0 +1,47 @@
+#include <SoftwareSerial.h>
+#include <cactus_io_AM2302.h>
+
+#define AM2302_PIN 7 // what pin on the arduino is the AM2302 data line connected to
+
+// Initialize AM2302 sensor for normal 16mhz Arduino.
+AM2302 dht(AM2302_PIN);
+
+SoftwareSerial Bluetooth(10, 9);
+String Data;
+
+void setup() {
+  Bluetooth.begin(9600);
+  Serial.begin(9600);
+  Bluetooth.println("Ready for command...");
+  dht.begin();
+}
+
+void loop() {
+  while (Bluetooth.available()) {
+    Data = Bluetooth.readString();
+
+    Serial.println(Data);
+    if (Data == "Ready") {
+      // Reading temperature or humidity takes about 250 milliseconds!
+      // Sensor readings may also be up to 2 seconds 'old' (its a very slow sensor)
+      dht.readHumidity();
+      dht.readTemperature();
+
+      // Check if any reads failed and exit early (to try again).
+      if (isnan(dht.humidity) || isnan(dht.temperature_C)) {
+        Serial.println("AM2302 sensor read failure!");
+        return;
+      }
+
+      Serial.print(dht.humidity); Serial.print(" %\t\t");
+      Serial.print(dht.temperature_C); Serial.println(" *C\t");
+      Bluetooth.print("  deg C: ");
+      Bluetooth.println(dht.temperature_C);
+      
+      delay(3000);
+    }
+    else {
+      ;
+    }
+  }
+}
